@@ -61,6 +61,10 @@ const BooleanNode = ({ id, data }: NodeProps) => {
 
   useEffect(() => {
     console.log(output);
+    const setNones = getEdges()
+      .filter((e) => e.source === id)
+      .map((e) => e.target);
+
     const targetIDs = getEdges()
       .filter((e) => e.source === id && e.id.includes(output))
       .map((e) => e.target);
@@ -70,6 +74,10 @@ const BooleanNode = ({ id, data }: NodeProps) => {
     // 得到所有什么BooleanNode相连的node id
     setNodes((nds) =>
       nds.map((n) => {
+        if (node?.data.output !== "notyet" && setNones.includes(n.id)) {
+          n.data = { ...n.data, isReady: false, isPreviousSuc: suc };
+        }
+
         if (node?.data.output !== "notyet" && targetIDs.includes(n.id)) {
           n.data = { ...n.data, isReady: suc, isPreviousSuc: suc };
         }
