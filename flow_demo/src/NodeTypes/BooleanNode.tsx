@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   Handle,
   Position,
@@ -26,6 +26,41 @@ const BooleanNode = ({ id, data }: NodeProps) => {
   // see the hook implementation for details of the click handler
   // calling onClick adds a child node to this node
   const onClick = useNodeClickHandler(id, setOpen);
+
+  useEffect(() => {
+    const node = getNode(id);
+    if (!node) return;
+    console.log("opening is ready?", node.data.isReady);
+    setReady(node.data.isReady);
+    setSuc(node.data.isSuccess);
+  }, [open]);
+
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.id === id) {
+          n.data = { ...n.data, isReady: ready };
+        }
+        return n;
+      })
+    );
+  }, [ready]);
+
+  useEffect(() => {
+    const ids = getOutgoers(node, getNodes(), getEdges()).map((n) => n.id);
+    // 得到所有什么BooleanNode相连的
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (ids.includes(n.id)) {
+          n.data = { ...n.data, isReady: suc, isPreviousSuc: suc };
+        }
+        if (n.id === id) {
+          n.data = { ...n.data, isSuccess: suc };
+        }
+        return n;
+      })
+    );
+  }, [suc]);
   const onClose = () => {
     setOpen(false);
   };

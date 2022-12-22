@@ -61,13 +61,31 @@ function useEdgeClick(id: EdgeProps["id"]) {
       type: "workflow",
     };
 
+    // // new connection from source to new node
+    // const sourceEdge = {
+    //   id: `${edge.source}->${insertNodeId}`,
+    //   source: edge.source,
+    //   target: insertNodeId,
+    //   type: "workflow",
+    // };
+    let sourceEdge;
     // new connection from source to new node
-    const sourceEdge = {
-      id: `${edge.source}->${insertNodeId}`,
-      source: edge.source,
-      target: insertNodeId,
-      type: "workflow",
-    };
+    if (sourceNode.type === "yesno") {
+      sourceEdge = {
+        id: `${edge.source}->${insertNodeId}`,
+        source: edge.source,
+        sourceHandle: edge.sourceHandle,
+        target: insertNodeId,
+        type: "workflow",
+      };
+    } else {
+      sourceEdge = {
+        id: `${edge.source}->${insertNodeId}`,
+        source: edge.source,
+        target: insertNodeId,
+        type: "workflow",
+      };
+    }
 
     // new connection from new node to target
     const targetEdge = {

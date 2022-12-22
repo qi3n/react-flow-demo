@@ -169,7 +169,7 @@ export default function EditTask({
           <Row gutter={16}>
             <Form.Item>
               <Select placeholder="Please choose the branch">
-                <Option value="private">Private</Option>
+                <Option value="notyet">Not Yet</Option>
                 <Option value="yes">Yes</Option>
                 <Option value="no">No</Option>
               </Select>

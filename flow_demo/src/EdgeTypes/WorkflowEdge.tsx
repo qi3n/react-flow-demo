@@ -1,4 +1,5 @@
-import React from "react";
+import { Button, Modal } from "antd";
+import React, { useState } from "react";
 import { EdgeProps, getBezierPath } from "reactflow";
 
 import useEdgeClick from "../hooks/useEdgeClick";
@@ -18,11 +19,26 @@ export default function CustomEdge({
 }: EdgeProps) {
   // see the hook for implementation details
   // onClick adds a node in between the nodes that are connected by this edge
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
 
-  const onHandleEdgeClick = () => {};
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
 
-  const onClick = useEdgeClick(id);
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
+  const onHandleEdgeClick = () => {
+    showModal();
+  };
+
+  const createTaskNode = useEdgeClick(id);
+
+  const createBooleanNode = useEdgeOnClick(id);
   // const onClick = useEdgeOnClick(id);
 
   const [edgePath, edgeCenterX, edgeCenterY] = getBezierPath({
@@ -36,6 +52,16 @@ export default function CustomEdge({
 
   return (
     <>
+      <Modal
+        title="Choose the Node Type"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[]}
+      >
+        <Button onClick={createTaskNode}>Task Node</Button>
+        <Button onClick={createBooleanNode}>Boolean Node</Button>
+      </Modal>
       <path
         id={id}
         style={style}
@@ -45,7 +71,7 @@ export default function CustomEdge({
       />
       <g transform={`translate(${edgeCenterX}, ${edgeCenterY})`}>
         <rect
-          onClick={onClick}
+          onClick={onHandleEdgeClick}
           x={-10}
           y={-10}
           width={20}
