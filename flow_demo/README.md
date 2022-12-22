@@ -1,4 +1,4 @@
-# Workflow spike 
+# Workflow spike
 
 To run this demo, please do the following steps:
 
@@ -14,4 +14,15 @@ npm install
 npm start
 ```
 
-If you face any issues, please [contact us](https://pro.reactflow.dev/contact).
+React Flow Documentation
+https://reactflow.dev/docs/introduction/
+
+### 目前完成
+
+1. 当前一个任务处于完成时(isSuccess==true)会将其下一个任务改为可就绪状态
+2. 点击连接线(edge)上的[+]直接添加默认任务
+
+### TODO
+
+1. 点击连接线(edge)上的[+]弹出 modal 选择要添加的任务的类型。
+2. 选择任务类型后，右侧弹出配置界面，点击提交后，在相应位置添加任务节点
