@@ -22,6 +22,10 @@ https://reactflow.dev/docs/introduction/
 1. 当前一个任务处于完成时(isSuccess==true)会将其下一个任务改为可就绪状态
 2. 点击连接线(edge)上的[+]直接添加默认任务
 
+### 已知问题
+
+1. 在前一个节点变为 Success，当前节点只在图表上进行更改，右侧弹出的表单并不会变化
+
 ### TODO
 
 1. 点击连接线(edge)上的[+]弹出 modal 选择要添加的任务的类型。

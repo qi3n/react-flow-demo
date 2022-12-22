@@ -19,15 +19,25 @@ export default function EditTask({
   open,
   info,
   onChangeNode,
-  setReadyFromOutside,
+  setTaskReady,
   readOutside,
   sucOutside,
-  setSucOutside,
+  setTaskSuc,
+  isPreviousSuc,
+  setIsPreviousSuc,
 }) {
   // In edit component,
   const [nodeInfo, setNodeInfo] = useState<any>({});
   const [suc, setSuc] = useState(info.data.isSuccess);
   const [ready, setReady] = useState(info.data.isReady);
+
+  useEffect(() => {
+    setReady(readOutside);
+  }, [readOutside]);
+
+  useEffect(() => {
+    setSuc(sucOutside);
+  }, [sucOutside]);
 
   // const setNodeReady = (value: boolean) => {
   //   if (value === false) {
@@ -55,7 +65,8 @@ export default function EditTask({
   //   }
   // };
   const setNodeReady = (value: boolean) => {
-    setReadyFromOutside(value);
+    setTaskReady(value);
+    setReady(value);
     setNodeInfo({
       ...info,
       data: {
@@ -78,7 +89,7 @@ export default function EditTask({
   //   });
   // };
   const setNodeSuccess = (value: boolean) => {
-    setSucOutside(value);
+    setTaskSuc(value);
     setNodeInfo({
       ...info,
       data: {
@@ -135,9 +146,10 @@ export default function EditTask({
         <Row gutter={16}>
           <Form.Item>
             <Switch
+              // disabled={!isPreviousSuc}
               checkedChildren="Ready"
               unCheckedChildren="Not Ready"
-              checked={readOutside}
+              checked={ready}
               onChange={setNodeReady}
             />
           </Form.Item>
@@ -146,7 +158,6 @@ export default function EditTask({
         <Row gutter={16}>
           <Form.Item>
             <Switch
-              disabled={!readOutside}
               checkedChildren="Success"
               unCheckedChildren="Not Success"
               checked={sucOutside}

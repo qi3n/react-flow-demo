@@ -28,12 +28,21 @@ import EditTask from "../components/EditTask";
 const WorkflowNode = ({ id, data }: NodeProps) => {
   const [suc, setSuc] = useState(data.isSuccess);
   const [ready, setReady] = useState(data.isReady);
+  const [isPreviousSuc, setIsPreviousSuc] = useState(data.isPreviousSuc);
 
   const { setEdges, setNodes, getNodes, getEdges, getNode } = useReactFlow();
   const [open, setOpen] = useState(false);
   // see the hook implementation for details of the click handler
   // calling onClick adds a child node to this node
   const onClick = useNodeClickHandler(id, setOpen);
+
+  useEffect(() => {
+    const node = getNode(id);
+    if (!node) return;
+    console.log("opening is ready?", node.data.isReady);
+    setReady(node.data.isReady);
+    setSuc(node.data.isSuccess);
+  }, [open]);
 
   useEffect(() => {
     setNodes((nds) =>
@@ -50,18 +59,22 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
     const ids = getOutgoers(node, getNodes(), getEdges()).map((n) => n.id);
     setNodes((nds) =>
       nds.map((n) => {
-        if (n.id === ids[0]) {
-          n.data = { ...n.data, isReady: ready };
+        if (ids.includes(n.id)) {
+          n.data = { ...n.data, isReady: suc, isPreviousSuc: suc };
+        }
+        if (n.id === id) {
+          n.data = { ...n.data, isSuccess: suc };
         }
         return n;
       })
     );
   }, [suc]);
+
   const node = getNode(id);
+
   let nextNodesID;
   if (node?.data.isSuccess) {
     nextNodesID = getOutgoers(node, getNodes(), getEdges()).map((n) => n.id);
-    console.log(nextNodesID);
   } else {
     nextNodesID = [];
   }
@@ -76,8 +89,6 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
       nds.map((item) => {
         if (item.id === val.id) {
           item.data.label = val.data.label;
-          item.data.isReady = val.data.isReady;
-          item.data.isSuccess = val.data.isSuccess;
         }
         if (nextNodesID.includes(item.id)) {
           item.data.isReady = true;
@@ -103,11 +114,13 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
         onClose={onClose}
         open={open}
         info={node}
-        setReadyFromOutside={setReady}
+        setTaskReady={setReady}
         onChangeNode={onChangeNode}
         readOutside={ready}
         sucOutside={suc}
-        setSucOutside={setSuc}
+        setTaskSuc={setSuc}
+        isPreviousSuc={isPreviousSuc}
+        setIsPreviousSuc={setIsPreviousSuc}
       />
       <div
         onClick={onClick}

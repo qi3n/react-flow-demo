@@ -1,11 +1,12 @@
-import { EdgeProps, useReactFlow } from "reactflow";
+import { EdgeProps, getOutgoers, useReactFlow } from "reactflow";
 
 import { uuid, randomLabel } from "../utils";
 
 // this hook implements the logic for clicking the button on a workflow edge
 // on edge click: create a node in between the two nodes that are connected by the edge
 function useEdgeClick(id: EdgeProps["id"]) {
-  const { setEdges, setNodes, getNode, getEdge, getEdges } = useReactFlow();
+  const { setEdges, setNodes, getNode, getEdges, getEdge, getNodes } =
+    useReactFlow();
 
   const handleEdgeClick = () => {
     // first we retrieve the edge object to get the source and target id
@@ -17,13 +18,25 @@ function useEdgeClick(id: EdgeProps["id"]) {
     const sourceNode = getNode(edge.source);
     // we retrieve the target node to get its position
     const targetNode = getNode(edge.target);
+
     if (!targetNode) return;
+
     setNodes((nds) =>
       nds.map((n) => {
         if (n.id === targetNode.id) {
-          n.data = { ...n.data, isReady: false };
+          // const nexts = getOutgoers(targetNode, getNodes(), getEdges());
+          console.log(
+            "I have change next node ready status. Node",
+            targetNode.id
+          );
+          // TODO: 这里更改了isReady无效
+          n.data = {
+            ...n.data,
+            isReady: false,
+            isSuccess: false,
+            isPrevious: false,
+          };
         }
-
         return n;
       })
     );
@@ -35,6 +48,7 @@ function useEdgeClick(id: EdgeProps["id"]) {
     if (sourceNode?.data.isSuccess) {
       isReady = true;
     }
+
     // create a unique id for newly added elements
     const insertNodeId = uuid();
 
@@ -80,7 +94,6 @@ function useEdgeClick(id: EdgeProps["id"]) {
         ...nodes.slice(targetNodeIndex, nodes.length),
       ];
     });
-    console.log(getEdges());
   };
 
   return handleEdgeClick;

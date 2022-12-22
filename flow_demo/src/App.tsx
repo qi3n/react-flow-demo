@@ -48,20 +48,35 @@ const proOptions: ProOptions = { account: "paid-no", hideAttribution: true };
 const defaultNodes: Node[] = [
   {
     id: "entry",
-    data: { label: "Entry", isReady: false, isSuccess: false },
+    data: {
+      label: "Entry",
+      isReady: false,
+      isSuccess: false,
+      isPreviousSuc: true,
+    },
     position: { x: 0, y: 0 },
     type: "workflow",
   },
   {
     id: "1",
-    data: { label: "Task A", isReady: false, isSuccess: false },
+    data: {
+      label: "Task A",
+      isReady: false,
+      isSuccess: false,
+      isPreviousSuc: false,
+    },
 
     position: { x: 0, y: 150 },
     type: "workflow",
   },
   {
     id: "2",
-    data: { label: "Task B", isReady: false, isSuccess: false },
+    data: {
+      label: "Task B",
+      isReady: false,
+      isSuccess: false,
+      isPreviousSuc: false,
+    },
 
     position: { x: 0, y: 300 },
     type: "workflow",
