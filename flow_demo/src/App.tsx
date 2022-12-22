@@ -79,12 +79,12 @@ const defaultNodes: Node[] = [
     },
 
     position: { x: 0, y: 300 },
-    type: "yesno",
+    type: "workflow",
   },
   {
     id: "exit",
     data: { label: "Exit" },
-    position: { x: 0, y: 500 },
+    position: { x: 0, y: 450 },
     type: "exit",
   },
 ];
@@ -106,14 +106,6 @@ const defaultEdges: Edge[] = [
   {
     id: "2=>exit",
     source: "2",
-    sourceHandle: "yes",
-    target: "exit",
-    type: "workflow",
-  },
-  {
-    id: "2=>exit",
-    source: "2",
-    sourceHandle: "no",
     target: "exit",
     type: "workflow",
   },
