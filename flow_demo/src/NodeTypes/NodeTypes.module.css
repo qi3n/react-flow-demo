@@ -1,0 +1,82 @@
+.node {
+  border: 1px solid #0984e3;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+  padding: 12px;
+  width: 160px;
+  text-align: center;
+  font-weight: bold;
+  color: #0984e3;
+  cursor: pointer;
+  line-height: 1.2;
+}
+.nodeSuc {
+  border: 1px solid #0af081cd;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+  padding: 12px;
+  width: 160px;
+  text-align: center;
+  font-weight: bold;
+  color: #0af081cd;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.node:hover {
+  background: radial-gradient(
+    circle at 18.7% 37.8%,
+    rgb(252, 252, 252) 0%,
+    rgb(239, 241, 243) 90%
+  );
+}
+
+.content {
+  pointer-events: none;
+}
+
+.handle {
+  visibility: hidden;
+}
+
+.placeholder {
+  width: 160px;
+  background: #fff;
+  border: 1px dashed #bbb;
+  color: #bbb;
+  box-shadow: none;
+}
+
+.site-form-in-drawer-wrapper {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: right;
+  background: #fff;
+  border-top: 1px solid #e9e9e9;
+}
+
+.close {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: none;
+  width: 12px;
+  height: 12px;
+  color: #fff;
+  background-color: #555;
+  border-radius: 50%;
+}
+
+.iconclose {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-weight: normal;
+  font-size: 8px;
+  line-height: 3px;
+}
