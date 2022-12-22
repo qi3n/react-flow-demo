@@ -14,7 +14,7 @@ import {
 import { CloseOutlined } from "@ant-design/icons";
 import { withSuccess } from "antd/es/modal/confirm";
 const { Option } = Select;
-export default function EditTask({
+export default function EditBooleanTask({
   onClose,
   open,
   info,
@@ -25,11 +25,14 @@ export default function EditTask({
   setTaskSuc,
   isPreviousSuc,
   setIsPreviousSuc,
+  outputOfNode,
+  setOutputOfNode,
 }) {
   // In edit component,
   const [nodeInfo, setNodeInfo] = useState<any>({});
   const [suc, setSuc] = useState(info.data.isSuccess);
   const [ready, setReady] = useState(info.data.isReady);
+  const [output, setOutput] = useState(info.data.output);
 
   useEffect(() => {
     setReady(readOutside);
@@ -38,6 +41,10 @@ export default function EditTask({
   useEffect(() => {
     setSuc(sucOutside);
   }, [sucOutside]);
+
+  useEffect(() => {
+    setOutput(outputOfNode);
+  }, [outputOfNode]);
 
   // const setNodeReady = (value: boolean) => {
   //   if (value === false) {
@@ -64,9 +71,19 @@ export default function EditTask({
   //     });
   //   }
   // };
+  const setNodeOutput = (value: string) => {
+    setOutputOfNode(value);
+    setNodeInfo({
+      ...info,
+      data: {
+        ...info.data,
+        output: value,
+      },
+    });
+  };
+
   const setNodeReady = (value: boolean) => {
     setTaskReady(value);
-    setReady(value);
     setNodeInfo({
       ...info,
       data: {
@@ -88,6 +105,7 @@ export default function EditTask({
   //     },
   //   });
   // };
+
   const setNodeSuccess = (value: boolean) => {
     setTaskSuc(value);
     setNodeInfo({
@@ -170,9 +188,9 @@ export default function EditTask({
             <Form.Item>
               <Select
                 placeholder="Please choose the branch"
-                onChange={(value) => console.log(value)}
+                onChange={setNodeOutput}
               >
-                <Option value="notyet">Not Yet</Option>
+                <Option value="notyet">Wait</Option>
                 <Option value="yes">Yes</Option>
                 <Option value="no">No</Option>
               </Select>

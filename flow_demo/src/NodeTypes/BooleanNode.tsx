@@ -10,8 +10,7 @@ import cx from "classnames";
 import useNodeClickHandler from "../hooks/useNodeClick";
 import styles from "./NodeTypes.module.css";
 import EditTask from "../components/EditTask";
-const leftHandleStyle = { left: 50 };
-const rightHandleStyle = { right: 50 };
+import EditBooleanTask from "../components/EditBooleanTask";
 
 const BooleanNode = ({ id, data }: NodeProps) => {
   // see the hook implementation for details of the click handler
@@ -21,6 +20,7 @@ const BooleanNode = ({ id, data }: NodeProps) => {
   const [suc, setSuc] = useState(data.isSuccess);
   const [ready, setReady] = useState(data.isReady);
   const [isPreviousSuc, setIsPreviousSuc] = useState(data.isPreviousSuc);
+  const [output, setOutput] = useState(data.output);
 
   const [open, setOpen] = useState(false);
   // see the hook implementation for details of the click handler
@@ -33,8 +33,10 @@ const BooleanNode = ({ id, data }: NodeProps) => {
     console.log("opening is ready?", node.data.isReady);
     setReady(node.data.isReady);
     setSuc(node.data.isSuccess);
-  }, [open]);
+    setOutput(node.data.output);
+  }, [open, id]);
 
+  // 这三个useEffect让表单的变化反映到flow里面
   useEffect(() => {
     setNodes((nds) =>
       nds.map((n) => {
@@ -46,21 +48,39 @@ const BooleanNode = ({ id, data }: NodeProps) => {
     );
   }, [ready]);
 
+  // useEffect(() => {
+  //   setNodes((nds) =>
+  //     nds.map((n) => {
+  //       if (n.id === id) {
+  //         n.data = { ...n.data, output: output };
+  //       }
+  //       return n;
+  //     })
+  //   );
+  // }, [output]);
+
   useEffect(() => {
-    const ids = getOutgoers(node, getNodes(), getEdges()).map((n) => n.id);
-    // 得到所有什么BooleanNode相连的
+    console.log(output);
+    const targetIDs = getEdges()
+      .filter((e) => e.source === id && e.id.includes(output))
+      .map((e) => e.target);
+
+    console.log("targets ids", targetIDs);
+    //const ids = getOutgoers(node, getNodes(), getEdges()).map((n) => n.id);
+    // 得到所有什么BooleanNode相连的node id
     setNodes((nds) =>
       nds.map((n) => {
-        if (ids.includes(n.id)) {
+        if (node?.data.output !== "notyet" && targetIDs.includes(n.id)) {
           n.data = { ...n.data, isReady: suc, isPreviousSuc: suc };
         }
+
         if (n.id === id) {
-          n.data = { ...n.data, isSuccess: suc };
+          n.data = { ...n.data, isSuccess: suc, output: output };
         }
         return n;
       })
     );
-  }, [suc]);
+  }, [suc, output]);
   const onClose = () => {
     setOpen(false);
   };
@@ -79,9 +99,9 @@ const BooleanNode = ({ id, data }: NodeProps) => {
         if (item.id === val.id) {
           item.data.label = val.data.label;
         }
-        if (nextNodesID.includes(item.id)) {
-          item.data.isReady = true;
-        }
+        // if (nextNodesID.includes(item.id)) {
+        //   item.data.isReady = true;
+        // }
         return item;
       })
     );
@@ -100,7 +120,7 @@ const BooleanNode = ({ id, data }: NodeProps) => {
 
   return (
     <>
-      <EditTask
+      <EditBooleanTask
         onClose={onClose}
         open={open}
         info={node}
@@ -111,6 +131,8 @@ const BooleanNode = ({ id, data }: NodeProps) => {
         setTaskSuc={setSuc}
         isPreviousSuc={isPreviousSuc}
         setIsPreviousSuc={setIsPreviousSuc}
+        outputOfNode={output}
+        setOutputOfNode={setOutput}
       />
       <div
         onClick={onClick}

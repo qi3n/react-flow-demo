@@ -65,6 +65,7 @@ function useEdgeOnClick(id: EdgeProps["id"]) {
         label: randomLabel() + " Boolean",
         isReady: isReady,
         isSuccess: false,
+        output: "notyet",
       },
       type: "yesno",
     };

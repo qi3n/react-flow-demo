@@ -50,8 +50,8 @@ const defaultNodes: Node[] = [
     id: "entry",
     data: {
       label: "Entry",
-      isReady: false,
-      isSuccess: false,
+      isReady: true,
+      isSuccess: true,
       isPreviousSuc: true,
     },
     position: { x: 0, y: 0 },

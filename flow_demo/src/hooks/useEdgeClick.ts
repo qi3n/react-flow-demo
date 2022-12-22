@@ -72,7 +72,7 @@ function useEdgeClick(id: EdgeProps["id"]) {
     // new connection from source to new node
     if (sourceNode.type === "yesno") {
       sourceEdge = {
-        id: `${edge.source}->${insertNodeId}`,
+        id: `${edge.source}->${insertNodeId}-${edge.sourceHandle}`,
         source: edge.source,
         sourceHandle: edge.sourceHandle,
         target: insertNodeId,
@@ -87,13 +87,23 @@ function useEdgeClick(id: EdgeProps["id"]) {
       };
     }
 
+    let targetEdge;
+    if (targetNode.type === "yesno") {
+      targetEdge = {
+        id: `${insertNodeId}->${edge.target}-${edge.sourceHandle}`,
+        source: insertNodeId,
+        target: edge.target,
+        type: "workflow",
+      };
+    } else {
+      targetEdge = {
+        id: `${insertNodeId}->${edge.target}`,
+        source: insertNodeId,
+        target: edge.target,
+        type: "workflow",
+      };
+    }
     // new connection from new node to target
-    const targetEdge = {
-      id: `${insertNodeId}->${edge.target}`,
-      source: insertNodeId,
-      target: edge.target,
-      type: "workflow",
-    };
 
     // remove the edge that was clicked as we have a new connection with a node inbetween
     setEdges((edges) =>
