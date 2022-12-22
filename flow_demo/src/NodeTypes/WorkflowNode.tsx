@@ -97,6 +97,8 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
       })
     );
   };
+  
+  // change styles based on the status
   let nodeClasses;
   if (data.isReady) {
     if (data.isSuccess) {
@@ -147,6 +149,7 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
           className={styles.handle}
           type="source"
           position={Position.Bottom}
+          id="node"
           isConnectable={true}
         />
       </div>

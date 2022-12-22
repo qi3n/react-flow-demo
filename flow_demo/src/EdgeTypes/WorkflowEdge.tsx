@@ -2,6 +2,7 @@ import React from "react";
 import { EdgeProps, getBezierPath } from "reactflow";
 
 import useEdgeClick from "../hooks/useEdgeClick";
+import useEdgeOnClick from "../hooks/useEdgeOnClick";
 import styles from "./EdgeTypes.module.css";
 
 export default function CustomEdge({
@@ -17,9 +18,13 @@ export default function CustomEdge({
 }: EdgeProps) {
   // see the hook for implementation details
   // onClick adds a node in between the nodes that are connected by this edge
+
+  const onHandleEdgeClick = () => {};
+
   const onClick = useEdgeClick(id);
 
-  
+  // const onClick = useEdgeOnClick(id);
+
   const [edgePath, edgeCenterX, edgeCenterY] = getBezierPath({
     sourceX,
     sourceY,

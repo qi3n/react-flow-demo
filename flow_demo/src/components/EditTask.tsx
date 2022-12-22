@@ -165,7 +165,7 @@ export default function EditTask({
             />
           </Form.Item>
         </Row>
-        {info.type !== "yesno" && (
+        {info.type === "yesno" && (
           <Row gutter={16}>
             <Form.Item>
               <Select placeholder="Please choose the branch">

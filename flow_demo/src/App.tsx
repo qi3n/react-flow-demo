@@ -79,12 +79,12 @@ const defaultNodes: Node[] = [
     },
 
     position: { x: 0, y: 300 },
-    type: "workflow",
+    type: "yesno",
   },
   {
     id: "exit",
     data: { label: "Exit" },
-    position: { x: 0, y: 450 },
+    position: { x: 0, y: 500 },
     type: "exit",
   },
 ];
@@ -106,6 +106,14 @@ const defaultEdges: Edge[] = [
   {
     id: "2=>exit",
     source: "2",
+    sourceHandle: "yes",
+    target: "exit",
+    type: "workflow",
+  },
+  {
+    id: "2=>exit",
+    source: "2",
+    sourceHandle: "no",
     target: "exit",
     type: "workflow",
   },
@@ -119,25 +127,7 @@ function ReactFlowDemo() {
   // this hook call ensures that the layout is re-calculated every time the graph changes
   useLayout();
 
-  // helper function for getting the status of nodes and edges
-  const { setEdges, setNodes, getNodes, getEdges, getNode } = useReactFlow();
-
-  const [open, setOpen] = useState(false);
-
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-
-  const onClose = () => {
-    setOpen(false);
-  };
-  let nInfo;
-  // const onNodeClick = (e: React.MouseEvent, node: Node) => {
-  //   if (node.id === "entry" || node.id === "exit") return;
-
-  //   nInfo = node;
-
-  //   console.log("ninfo ", nInfo);
-  //   setOpen(true);
-  // };
 
   return (
     <>
@@ -152,8 +142,8 @@ function ReactFlowDemo() {
         fitViewOptions={fitViewOptions}
         onInit={reactFlowInstance}
         minZoom={0.2}
-        nodesDraggable={false}
-        nodesConnectable={false}
+        nodesDraggable={true}
+        nodesConnectable={true}
         zoomOnDoubleClick={false}
       >
         <Background />

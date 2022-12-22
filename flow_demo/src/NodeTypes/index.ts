@@ -1,4 +1,5 @@
 import { NodeTypes } from "reactflow";
+import BooleanNode from "./BooleanNode";
 import ExitNode from "./ExitNode";
 
 import PlaceholderNode from "./PlaceholderNode";
@@ -9,6 +10,7 @@ const nodeTypes: NodeTypes = {
   placeholder: PlaceholderNode,
   workflow: WorkflowNode,
   exit: ExitNode,
+  yesno: BooleanNode,
 };
 
 export default nodeTypes;

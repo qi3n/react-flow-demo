@@ -46,6 +46,8 @@ https://reactflow.dev/docs/introduction/
 1. 点击连接线(edge)上的[+]弹出 modal 选择要添加的任务的类型。
 2. 选择任务类型后，右侧弹出配置界面，点击提交后，在相应位置添加任务节点
 3. 删除节点，并确保剩余节点正确连接
+4. 添加Wait节点类型
+5. 添加Boolean节点类型
 
 ### DOING
 
