@@ -39,7 +39,6 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
   useEffect(() => {
     const node = getNode(id);
     if (!node) return;
-    console.log("opening is ready?", node.data.isReady);
     setReady(node.data.isReady);
     setSuc(node.data.isSuccess);
   }, [open]);
@@ -97,7 +96,7 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
       })
     );
   };
-  
+
   // change styles based on the status
   let nodeClasses;
   if (data.isReady) {

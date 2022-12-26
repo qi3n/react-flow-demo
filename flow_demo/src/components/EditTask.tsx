@@ -130,17 +130,18 @@ export default function EditTask({
         </Space>
       }
     >
-      <Form layout="vertical" hideRequiredMark>
+      <Form
+        layout="vertical"
+        hideRequiredMark
+        initialValues={{ name: info.data.label }}
+      >
         <Row gutter={16}>
           <Form.Item
             name="name"
             label="Name"
             rules={[{ required: true, message: "Please enter task name" }]}
           >
-            <Input
-              defaultValue={info.data.label}
-              onChange={(evt) => setNodeName(evt.target.value)}
-            />
+            <Input onChange={(evt) => setNodeName(evt.target.value)} />
           </Form.Item>
         </Row>
         <Row gutter={16}>

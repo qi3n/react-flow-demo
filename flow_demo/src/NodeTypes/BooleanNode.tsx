@@ -30,7 +30,7 @@ const BooleanNode = ({ id, data }: NodeProps) => {
   useEffect(() => {
     const node = getNode(id);
     if (!node) return;
-    console.log("opening is ready?", node.data.isReady);
+
     setReady(node.data.isReady);
     setSuc(node.data.isSuccess);
     setOutput(node.data.output);
@@ -89,6 +89,7 @@ const BooleanNode = ({ id, data }: NodeProps) => {
       })
     );
   }, [suc, output]);
+
   const onClose = () => {
     setOpen(false);
   };

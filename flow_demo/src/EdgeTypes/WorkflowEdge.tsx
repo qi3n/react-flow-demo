@@ -19,26 +19,11 @@ export default function CustomEdge({
 }: EdgeProps) {
   // see the hook for implementation details
   // onClick adds a node in between the nodes that are connected by this edge
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+  // const createTaskNode = useEdgeClick(id);
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  // const createBooleanNode = useEdgeOnClick(id);
 
-  const onHandleEdgeClick = () => {
-    showModal();
-  };
-
-  const createTaskNode = useEdgeClick(id);
-
-  const createBooleanNode = useEdgeOnClick(id);
   // const onClick = useEdgeOnClick(id);
 
   const [edgePath, edgeCenterX, edgeCenterY] = getBezierPath({
@@ -52,7 +37,7 @@ export default function CustomEdge({
 
   return (
     <>
-      <Modal
+      {/* <Modal
         title="Choose the Node Type"
         open={isModalOpen}
         onOk={handleOk}
@@ -61,7 +46,7 @@ export default function CustomEdge({
       >
         <Button onClick={createTaskNode}>Task Node</Button>
         <Button onClick={createBooleanNode}>Boolean Node</Button>
-      </Modal>
+      </Modal> */}
       <path
         id={id}
         style={style}
@@ -71,7 +56,7 @@ export default function CustomEdge({
       />
       <g transform={`translate(${edgeCenterX}, ${edgeCenterY})`}>
         <rect
-          onClick={onHandleEdgeClick}
+          // onClick={onHandleEdgeClick}
           x={-10}
           y={-10}
           width={20}

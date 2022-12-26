@@ -4,7 +4,7 @@
   background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   padding: 12px;
-  width: 160px;
+  width: 220px;
   text-align: center;
   font-weight: bold;
   color: #0984e3;
@@ -42,7 +42,7 @@
 }
 
 .placeholder {
-  width: 160px;
+  width: 220px;
   background: #fff;
   border: 1px dashed #bbb;
   color: #bbb;

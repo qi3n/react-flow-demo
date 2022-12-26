@@ -31,15 +31,22 @@ import {
   Drawer,
   Form,
   Input,
+  Modal,
   Row,
   Select,
   Space,
+  Typography,
 } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+const { Title } = Typography;
 const { Option } = Select;
 
 import "reactflow/dist/style.css";
+import styles from "./App.module.css";
 import { randomLabel } from "./utils";
+import useEdgeClick from "./hooks/useEdgeClick";
+import useEdgeOnClick from "./hooks/useEdgeOnClick";
+import CreateTaskForm from "./components/CreateTaskForm";
 
 const proOptions: ProOptions = { account: "paid-no", hideAttribution: true };
 
@@ -51,7 +58,7 @@ const defaultNodes: Node[] = [
     data: {
       label: "Entry",
       isReady: true,
-      isSuccess: true,
+      isSuccess: false,
       isPreviousSuc: true,
     },
     position: { x: 0, y: 0 },
@@ -119,10 +126,96 @@ function ReactFlowDemo() {
   // this hook call ensures that the layout is re-calculated every time the graph changes
   useLayout();
 
-  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreationOpen, setIsCreationOpen] = useState(false);
+
+  const [currentEdgeId, setCurrentEdgeId] = useState("");
+  const [currentNodeId, setCurrentNodeId] = useState("");
+  const [nodeType, setNodeType] = useState("placeholder");
+  const [taskType, setTaskType] = useState("");
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const showCreation = () => {
+    setIsCreationOpen(true);
+  };
+
+  const handleCreationCancel = () => {
+    setIsCreationOpen(false);
+  };
+
+  // const createTaskNode = useEdgeClick(currentEdgeId);
+
+  const createTaskNode = (taskType: string, nodeType: string) => {
+    setNodeType(nodeType);
+    setTaskType(taskType);
+    handleOk();
+    showCreation();
+  };
+
+  // const createBooleanNode = useEdgeOnClick(currentEdgeId);
+  const createBooleanNode = () => {
+    setNodeType("yesno");
+    handleOk();
+    showCreation();
+  };
+
+  const onEdgeClick = (e: any, edge: Edge) => {
+    setCurrentEdgeId(edge.id);
+    showModal();
+  };
 
   return (
     <>
+      <CreateTaskForm
+        onClose={handleCreationCancel}
+        open={isCreationOpen}
+        nodeType={nodeType}
+        taskType={taskType}
+        edgeId={currentEdgeId}
+      />
+      <Modal
+        title="选择任务类型"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[]}
+        width={280}
+      >
+        <div className={styles.modalContainer}>
+          <div>
+            <Title level={5}>提醒</Title>
+            <Button onClick={() => createTaskNode("email", "workflow")}>
+              邮件提醒
+            </Button>
+            <Button onClick={() => createTaskNode("phone", "workflow")}>
+              电话提醒
+            </Button>
+            {/* <Button onClick={() => createTaskNode()}>推送提醒</Button> */}
+          </div>
+          <div>
+            <Title level={5}>事件</Title>
+            <Button onClick={() => createTaskNode("event", "workflow")}>
+              完善客档信息
+            </Button>
+            <Button onClick={() => createTaskNode("event", "workflow")}>
+              预约试驾
+            </Button>
+            <Button onClick={createBooleanNode}>是否有车</Button>
+          </div>
+        </div>
+      </Modal>
+
       <ReactFlow
         defaultNodes={defaultNodes}
         defaultEdges={defaultEdges}
@@ -132,11 +225,11 @@ function ReactFlowDemo() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitViewOptions={fitViewOptions}
-        onInit={reactFlowInstance}
         minZoom={0.2}
         nodesDraggable={true}
         nodesConnectable={true}
         zoomOnDoubleClick={false}
+        onEdgeClick={onEdgeClick}
       >
         <Background />
         <Controls />

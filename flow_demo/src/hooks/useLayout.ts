@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { useReactFlow, useStore, Node, Edge, ReactFlowState } from 'reactflow';
-import { stratify, tree } from 'd3-hierarchy';
-import { timer } from 'd3-timer';
+import { useEffect, useRef } from "react";
+import { useReactFlow, useStore, Node, Edge, ReactFlowState } from "reactflow";
+import { stratify, tree } from "d3-hierarchy";
+import { timer } from "d3-timer";
 
 // initialize the tree layout (see https://observablehq.com/@d3/tree for examples)
 const layout = tree<Node>()
   // the node size configures the spacing between the nodes ([width, height])
-  .nodeSize([200, 150])
+  .nodeSize([260, 200])
   // this is needed for creating equal space between all nodes
   .separation(() => 1);
 
@@ -20,14 +20,18 @@ function layoutNodes(nodes: Node[], edges: Edge[]): Node[] {
     .id((d) => d.id)
     // get the id of each node by searching through the edges
     // this only works if every node has one connection
-    .parentId((d: Node) => edges.find((e: Edge) => e.target === d.id)?.source)(nodes);
+    .parentId((d: Node) => edges.find((e: Edge) => e.target === d.id)?.source)(
+    nodes
+  );
 
   // run the layout algorithm with the hierarchy data structure
   const root = layout(hierarchy);
 
   // convert the hierarchy back to react flow nodes (the original node is stored as d.data)
   // we only extract the position from the d3 function
-  return root.descendants().map((d) => ({ ...d.data, position: { x: d.x, y: d.y } }));
+  return root
+    .descendants()
+    .map((d) => ({ ...d.data, position: { x: d.x, y: d.y } }));
 }
 
 // this is the store selector that is used for triggering the layout, this returns the number of nodes once they change
@@ -42,7 +46,8 @@ function useLayout() {
   // whenever the nodes length changes, we calculate the new layout
   const nodeCount = useStore(nodeCountSelector);
 
-  const { getNodes, getNode, setNodes, setEdges, getEdges, fitView } = useReactFlow();
+  const { getNodes, getNode, setNodes, setEdges, getEdges, fitView } =
+    useReactFlow();
 
   useEffect(() => {
     // get the current nodes and edges
