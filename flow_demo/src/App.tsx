@@ -50,6 +50,83 @@ import CreateTaskForm from "./components/CreateTaskForm";
 
 const proOptions: ProOptions = { account: "paid-no", hideAttribution: true };
 
+const emptyNodes: Node[] = [
+  {
+    id: "entry",
+    data: {
+      label: "Entry",
+      isReady: true,
+      isSuccess: false,
+      isPreviousSuc: true,
+    },
+    position: { x: 0, y: 0 },
+    type: "workflow",
+  },
+  {
+    id: "exit",
+    data: { label: "Exit" },
+    position: { x: 0, y: 200 },
+    type: "workflow",
+  },
+];
+
+const emptyEdges: Edge[] = [
+  {
+    id: "entry=>exit",
+    source: "entry",
+    target: "exit",
+    type: "workflow",
+  },
+];
+
+const demoNodes1: Node[] = [
+  {
+    id: "entry",
+    data: {
+      label: "Entry",
+      isReady: true,
+      isSuccess: false,
+      isPreviousSuc: true,
+    },
+    position: { x: 0, y: 0 },
+    type: "workflow",
+  },
+  {
+    id: "1",
+    data: {
+      label: "发送邮件提醒",
+      taskType: "email",
+      email: "zhengxu465@gmail.com",
+      content: "test content",
+      frequency: 2,
+      dateRange: ["2022-12-27", "2022-12-30"],
+    },
+    type: "workflow",
+    position: { x: 0, y: 150 },
+  },
+  {
+    id: "exit",
+    data: { label: "Exit" },
+    position: { x: 0, y: 300 },
+    type: "workflow",
+  },
+];
+
+const demoEdges1: Edge[] = [
+  {
+    id: "entry=>1",
+    source: "entry",
+    target: "1",
+    type: "workflow",
+  },
+  {
+    id: "1=>exit",
+    source: "1",
+    target: "exit",
+    type: "workflow",
+  },
+];
+
 // initial setup: one workflow node and a placeholder node
 // placeholder nodes can be turned into a workflow node by click
 const defaultNodes: Node[] = [
@@ -92,7 +169,7 @@ const defaultNodes: Node[] = [
     id: "exit",
     data: { label: "Exit" },
     position: { x: 0, y: 450 },
-    type: "exit",
+    type: "workflow",
   },
 ];
 
@@ -184,6 +261,7 @@ function ReactFlowDemo() {
         taskType={taskType}
         edgeId={currentEdgeId}
       />
+
       <Modal
         title="选择任务类型"
         open={isModalOpen}
@@ -205,20 +283,28 @@ function ReactFlowDemo() {
           </div>
           <div>
             <Title level={5}>事件</Title>
-            <Button onClick={() => createTaskNode("event", "workflow")}>
+            <Button
+              disabled={true}
+              onClick={() => createTaskNode("event", "workflow")}
+            >
               完善客档信息
             </Button>
-            <Button onClick={() => createTaskNode("event", "workflow")}>
+            <Button
+              disabled={true}
+              onClick={() => createTaskNode("event", "workflow")}
+            >
               预约试驾
             </Button>
-            <Button onClick={createBooleanNode}>是否有车</Button>
+            <Button disabled={true} onClick={createBooleanNode}>
+              是否有车
+            </Button>
           </div>
         </div>
       </Modal>
 
       <ReactFlow
-        defaultNodes={defaultNodes}
-        defaultEdges={defaultEdges}
+        defaultNodes={demoNodes1}
+        defaultEdges={demoEdges1}
         // onNodeClick={onNodeClick}
         proOptions={proOptions}
         fitView

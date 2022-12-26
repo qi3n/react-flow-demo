@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import {
   Button,
   Col,
   DatePicker,
+  DatePickerProps,
   Drawer,
   Form,
   Input,
+  InputNumber,
   Row,
   Select,
   Space,
@@ -15,7 +17,11 @@ import { CloseOutlined } from "@ant-design/icons";
 import { withSuccess } from "antd/es/modal/confirm";
 import useCreateNode from "../hooks/useCreateNode";
 import { useReactFlow } from "reactflow";
+
+const { RangePicker } = DatePicker;
 import { uuid } from "../utils";
+import { RangePickerProps } from "antd/es/date-picker";
+import TextArea from "antd/es/input/TextArea";
 const { Option } = Select;
 export default function CreationTaskForm({
   onClose,
@@ -40,7 +46,10 @@ export default function CreationTaskForm({
   const [label, setLabel] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-
+  const [frequency, setFrequency] = useState(1);
+  const [dateRange, setDateRange] = useState<any>({});
+  const [content, setContent] = useState("");
+  
   //   useEffect(() => {
   //     setReady(readOutside);
   //   }, [readOutside]);
@@ -74,29 +83,31 @@ export default function CreationTaskForm({
   //     });
   //   }
   // };
-
-  const setNodeReady = (value: boolean) => {
-    setReady(value);
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
     setNodeInfo({
+      ...nodeInfo,
       data: {
         ...nodeInfo.data,
-        isReady: value,
-        isSuccess: suc,
+        content: e.target.value,
       },
     });
   };
-
-  // const setNodeSuccess = (value: boolean) => {
-  //   setSuc(value);
-  //   setNodeInfo({
-  //     ...info,
-  //     data: {
-  //       ...info.data,
-  //       isSuccess: value,
-  //       isReady: ready,
-  //     },
-  //   });
-  // };
+  const handleRangeDate = (
+    value: DatePickerProps["value"] | RangePickerProps["value"],
+    dateString: [string, string] | string
+  ) => {
+    console.log("Selected Time: ", value);
+    console.log("Formatted Selected Time: ", typeof dateString);
+    setDateRange(dateString);
+    setNodeInfo({
+      ...nodeInfo,
+      data: {
+        ...nodeInfo.data,
+        dateRange: dateString,
+      },
+    });
+  };
 
   const setNodeSuccess = (value: boolean) => {
     setSuc(value);
@@ -108,9 +119,21 @@ export default function CreationTaskForm({
     });
   };
 
+  const handleFrequencyChange = (value: number) => {
+    setFrequency(value);
+    setNodeInfo({
+      ...nodeInfo,
+      data: {
+        ...nodeInfo.data,
+        freqency: value,
+      },
+    });
+  };
+
   const setNodeEmail = (value: string) => {
     setEmail(value);
     setNodeInfo({
+      ...nodeInfo,
       data: {
         ...nodeInfo.data,
         email: value,
@@ -121,6 +144,7 @@ export default function CreationTaskForm({
   const setNodePhone = (value: string) => {
     setPhone(value);
     setNodeInfo({
+      ...nodeInfo,
       data: {
         ...nodeInfo.data,
         phone: value,
@@ -130,6 +154,7 @@ export default function CreationTaskForm({
 
   const setNodeName = (value: string) => {
     setNodeInfo({
+      ...nodeInfo,
       data: {
         ...nodeInfo.data,
         label: value,
@@ -139,7 +164,6 @@ export default function CreationTaskForm({
 
   const createNode = () => {
     const edge = getEdge(edgeId);
-
     if (!edge) {
       return;
     }
@@ -147,7 +171,6 @@ export default function CreationTaskForm({
     // we retrieve the target node to get its position
     const targetNode = getNode(edge.target);
     if (!targetNode) return;
-
     setNodes((nds) =>
       nds.map((n) => {
         if (n.id === targetNode.id) {
@@ -166,10 +189,10 @@ export default function CreationTaskForm({
         return n;
       })
     );
-
     if (!targetNode) {
       return;
     }
+
     let isReady = false;
     if (sourceNode?.data.isSuccess) {
       isReady = true;
@@ -183,7 +206,12 @@ export default function CreationTaskForm({
       id: insertNodeId,
       // we place the node at the current position of the target (prevents jumping)
       position: { x: targetNode.position.x, y: targetNode.position.y },
-      data: { ...nodeInfo.data, isReady: isReady, isSuccess: false },
+      data: {
+        ...nodeInfo.data,
+        isReady: isReady,
+        isSuccess: false,
+        taskType: taskType,
+      },
       type: "workflow",
     };
     console.log(nodeInfo);
@@ -244,12 +272,7 @@ export default function CreationTaskForm({
   const onSubmitHandler = () => {
     // onChangeNode(nodeInfo);
     console.log("current edge id", edgeId);
-    setNodeInfo({
-      data: {
-        ...nodeInfo.data,
-        label: title,
-      },
-    });
+
     createNode();
     onClose();
   };
@@ -288,14 +311,6 @@ export default function CreationTaskForm({
       onClose={onClose}
       open={open}
       bodyStyle={{ paddingBottom: 80 }}
-      //   extra={
-      //     <Space>
-      //       <Button onClick={onClose}>Cancel</Button>
-      //       <Button onClick={onSubmitHandler} type="primary">
-      //         Submit
-      //       </Button>
-      //     </Space>
-      //   }
     >
       <Form
         initialValues={{ email: email, name: "" }}
@@ -313,107 +328,52 @@ export default function CreationTaskForm({
               <Input onChange={(evt) => setNodeName(evt.target.value)} />
             </Form.Item>
             {recipient}
+            <Form.Item
+              name="content"
+              label="提醒内容"
+              rules={[{ required: true, message: "请输入提醒内容" }]}
+            >
+              <TextArea
+                showCount
+                maxLength={240}
+                style={{ height: 200, marginBottom: 24 }}
+                onChange={handleContentChange}
+                placeholder="请输入"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={16}>
+            <Form.Item name="dateRange" label="日期范围">
+              <Space direction="vertical" size={12}>
+                <RangePicker onChange={handleRangeDate} />
+              </Space>
+            </Form.Item>
+            <Form.Item name="frequency" label="频率">
+              <InputNumber
+                min={1}
+                max={30}
+                defaultValue={frequency}
+                onChange={handleFrequencyChange}
+              />
+              {"   "}天
+            </Form.Item>
           </Col>
         </Row>
 
-        {/* <Row gutter={16}>
-          <Form.Item>
-            <Switch
-              // disabled={!isPreviousSuc}
-              checkedChildren="Ready"
-              unCheckedChildren="Not Ready"
-              checked={ready}
-              onChange={setNodeReady}
-            />
-          </Form.Item>
-        </Row> */}
-
         <Row gutter={16}>
-          <Form.Item>
-            <Switch
-              checkedChildren="Success"
-              unCheckedChildren="Not Success"
-              checked={suc}
-              onChange={setNodeSuccess}
-            />
-          </Form.Item>
+          <Col span={24}>
+            <Form.Item>
+              <Switch
+                checkedChildren="Success"
+                unCheckedChildren="Not Success"
+                checked={suc}
+                onChange={setNodeSuccess}
+              />
+            </Form.Item>
+          </Col>
         </Row>
-
-        {/* <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="owner"
-                label="Owner"
-                rules={[{ required: true, message: "Please select an owner" }]}
-              >
-                <Select placeholder="Please select an owner">
-                  <Option value="xiao">Xiaoxiao Fu</Option>
-                  <Option value="mao">Maomao Zhou</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="type"
-                label="Type"
-                rules={[{ required: true, message: "Please choose the type" }]}
-              >
-                <Select placeholder="Please choose the type">
-                  <Option value="private">Private</Option>
-                  <Option value="public">Public</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="approver"
-                label="Approver"
-                rules={[
-                  { required: true, message: "Please choose the approver" },
-                ]}
-              >
-                <Select placeholder="Please choose the approver">
-                  <Option value="jack">Jack Ma</Option>
-                  <Option value="tom">Tom Liu</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="dateTime"
-                label="DateTime"
-                rules={[
-                  { required: true, message: "Please choose the dateTime" },
-                ]}
-              >
-                <DatePicker.RangePicker
-                  style={{ width: "100%" }}
-                  getPopupContainer={(trigger) => trigger.parentElement!}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="description"
-                label="Description"
-                rules={[
-                  {
-                    required: true,
-                    message: "please enter url description",
-                  },
-                ]}
-              >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="please enter url description"
-                />
-              </Form.Item>
-            </Col>
-          </Row> */}
         <Form.Item wrapperCol={{ span: 16 }}>
           <Button type="primary" htmlType="submit">
             Submit

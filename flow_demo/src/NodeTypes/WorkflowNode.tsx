@@ -13,6 +13,7 @@ import useNodeClickHandler from "../hooks/useNodeClick";
 
 import {
   Button,
+  Card,
   Col,
   DatePicker,
   Drawer,
@@ -128,7 +129,16 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
         className={nodeClasses}
         title="click to add a child node"
       >
-        {data.label}
+        <div className="site-card-border-less-wrapper">
+          <Card
+            title={data.label}
+            bordered={false}
+            style={{ width: 250, height: 120 }}
+          >
+            {data.email && <div>To: {data.email}</div>}
+            {data.phone && <div>To: {data.phone}</div>}
+          </Card>
+        </div>
         <Handle
           className={styles.handle}
           type="target"

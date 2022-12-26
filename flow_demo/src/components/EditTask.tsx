@@ -3,9 +3,11 @@ import {
   Button,
   Col,
   DatePicker,
+  DatePickerProps,
   Drawer,
   Form,
   Input,
+  InputNumber,
   Row,
   Select,
   Space,
@@ -13,7 +15,14 @@ import {
 } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { withSuccess } from "antd/es/modal/confirm";
+import TextArea from "antd/es/input/TextArea";
+import { RangePickerProps } from "antd/es/date-picker";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 export default function EditTask({
   onClose,
   open,
@@ -30,6 +39,13 @@ export default function EditTask({
   const [nodeInfo, setNodeInfo] = useState<any>({});
   const [suc, setSuc] = useState(info.data.isSuccess);
   const [ready, setReady] = useState(info.data.isReady);
+  const [email, setEmail] = useState(info.data.email);
+  const [phone, setPhone] = useState(info.data.phone);
+  const [frequency, setFrequency] = useState(info.data.freqency);
+  const [dateRange, setDateRange] = useState<any>(info.data.dateRange);
+  const [content, setContent] = useState(info.data.content);
+
+  const dateFormat = "YYYY-MM-DD";
 
   useEffect(() => {
     setReady(readOutside);
@@ -39,31 +55,6 @@ export default function EditTask({
     setSuc(sucOutside);
   }, [sucOutside]);
 
-  // const setNodeReady = (value: boolean) => {
-  //   if (value === false) {
-  //     setSuc(false);
-  //     setReady(value);
-
-  //     setNodeInfo({
-  //       ...info,
-  //       data: {
-  //         ...info.data,
-  //         isReady: value,
-  //         isSuccess: value,
-  //       },
-  //     });
-  //   } else {
-  //     setReady(value);
-  //     setNodeInfo({
-  //       ...info,
-  //       data: {
-  //         ...info.data,
-  //         isReady: value,
-  //         isSuccess: suc,
-  //       },
-  //     });
-  //   }
-  // };
   const setNodeReady = (value: boolean) => {
     setTaskReady(value);
     setReady(value);
@@ -77,17 +68,6 @@ export default function EditTask({
     });
   };
 
-  // const setNodeSuccess = (value: boolean) => {
-  //   setSuc(value);
-  //   setNodeInfo({
-  //     ...info,
-  //     data: {
-  //       ...info.data,
-  //       isSuccess: value,
-  //       isReady: ready,
-  //     },
-  //   });
-  // };
   const setNodeSuccess = (value: boolean) => {
     setTaskSuc(value);
     setNodeInfo({
@@ -99,12 +79,71 @@ export default function EditTask({
     });
   };
 
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+    setNodeInfo({
+      ...info,
+      data: {
+        ...info.data,
+        content: e.target.value,
+      },
+    });
+  };
+
+  const handleRangeDate = (
+    value: DatePickerProps["value"] | RangePickerProps["value"],
+    dateString: [string, string] | string
+  ) => {
+    console.log("Selected Time: ", value);
+    console.log("Formatted Selected Time: ", typeof dateString);
+    setDateRange(dateString);
+    setNodeInfo({
+      ...info,
+      data: {
+        ...info.data,
+        dateRange: dateString,
+      },
+    });
+  };
+  const handleFrequencyChange = (value: number) => {
+    setFrequency(value);
+    setNodeInfo({
+      ...info,
+      data: {
+        ...info.data,
+        freqency: value,
+      },
+    });
+  };
+
   const setNodeName = (value: string) => {
     setNodeInfo({
       ...info,
       data: {
         ...info.data,
         label: value,
+      },
+    });
+  };
+
+  const setNodeEmail = (value: string) => {
+    setEmail(value);
+    setNodeInfo({
+      ...info,
+      data: {
+        ...info.data,
+        email: value,
+      },
+    });
+  };
+
+  const setNodePhone = (value: string) => {
+    setPhone(value);
+    setNodeInfo({
+      ...info,
+      data: {
+        ...info.data,
+        phone: value,
       },
     });
   };
@@ -133,17 +172,85 @@ export default function EditTask({
       <Form
         layout="vertical"
         hideRequiredMark
-        initialValues={{ name: info.data.label }}
+        initialValues={{
+          name: info.data.label,
+          email: email,
+          phone: phone,
+          content: content,
+        }}
       >
         <Row gutter={16}>
-          <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter task name" }]}
-          >
-            <Input onChange={(evt) => setNodeName(evt.target.value)} />
-          </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, message: "Please enter task name" }]}
+            >
+              <Input onChange={(evt) => setNodeName(evt.target.value)} />
+            </Form.Item>
+            {info.data.taskType === "email" && (
+              <Form.Item
+                name="email"
+                label="邮箱"
+                rules={[{ required: true, message: "Please enter email" }]}
+              >
+                <Input onChange={(evt) => setNodeEmail(evt.target.value)} />
+              </Form.Item>
+            )}
+
+            {info.data.taskType === "phone" && (
+              <Form.Item
+                name="phone"
+                label="手机号码"
+                rules={[
+                  { required: true, message: "Please enter Phone number" },
+                ]}
+              >
+                <Input onChange={(evt) => setNodePhone(evt.target.value)} />
+              </Form.Item>
+            )}
+
+            <Form.Item
+              name="content"
+              label="提醒内容"
+              rules={[{ required: true, message: "请输入提醒内容" }]}
+            >
+              <TextArea
+                showCount
+                maxLength={240}
+                style={{ height: 200, marginBottom: 24 }}
+                onChange={handleContentChange}
+                placeholder="请输入"
+              />
+            </Form.Item>
+          </Col>
         </Row>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Form.Item name="dateRange" label="日期范围">
+              <Space direction="vertical" size={12}>
+                <RangePicker
+                  defaultValue={[
+                    dayjs("2022-12-28", dateFormat),
+                    dayjs("2022-12-29", dateFormat),
+                  ]}
+                  onChange={handleRangeDate}
+                />
+              </Space>
+            </Form.Item>
+            <Form.Item name="frequency" label="频率">
+              <InputNumber
+                min={1}
+                max={30}
+                defaultValue={frequency}
+                onChange={handleFrequencyChange}
+              />
+              {"   "}天
+            </Form.Item>
+          </Col>
+        </Row>
+
         <Row gutter={16}>
           <Form.Item>
             <Switch

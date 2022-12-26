@@ -4,12 +4,13 @@
   background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   padding: 12px;
-  width: 220px;
-  text-align: center;
+  width: 250px;
+
   font-weight: bold;
   color: #0984e3;
   cursor: pointer;
   line-height: 1.2;
+  word-wrap: break-word;
 }
 .nodeSuc {
   border: 1px solid #0af081cd;
@@ -17,8 +18,8 @@
   background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   padding: 12px;
-  width: 160px;
-  text-align: center;
+  width: 250px;
+
   font-weight: bold;
   color: #0af081cd;
   cursor: pointer;
@@ -42,7 +43,7 @@
 }
 
 .placeholder {
-  width: 220px;
+  width: 250px;
   background: #fff;
   border: 1px dashed #bbb;
   color: #bbb;
