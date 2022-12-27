@@ -23,12 +23,18 @@ import { uuid } from "../utils";
 import { RangePickerProps } from "antd/es/date-picker";
 import TextArea from "antd/es/input/TextArea";
 const { Option } = Select;
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
+
 export default function CreationTaskForm({
   onClose,
   open,
   nodeType,
   taskType,
   edgeId,
+  taskName,
   //   setTaskReady,
   //   readOutside,
   //   sucOutside,
@@ -49,50 +55,46 @@ export default function CreationTaskForm({
   const [frequency, setFrequency] = useState(1);
   const [dateRange, setDateRange] = useState<any>({});
   const [content, setContent] = useState("");
-  
-  //   useEffect(() => {
-  //     setReady(readOutside);
-  //   }, [readOutside]);
+  const [task, setTask] = useState(taskName);
+  const [date, setDate] = useState<any>({});
 
-  //   useEffect(() => {
-  //     setSuc(sucOutside);
-  //   }, [sucOutside]);
+  useEffect(() => {
+    setTask(taskName);
+  }, [taskName]);
 
-  // const setNodeReady = (value: boolean) => {
-  //   if (value === false) {
-  //     setSuc(false);
-  //     setReady(value);
+  const disabledDate: RangePickerProps["disabledDate"] = (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs().endOf("day");
+  };
 
-  //     setNodeInfo({
-  //       ...info,
-  //       data: {
-  //         ...info.data,
-  //         isReady: value,
-  //         isSuccess: value,
-  //       },
-  //     });
-  //   } else {
-  //     setReady(value);
-  //     setNodeInfo({
-  //       ...info,
-  //       data: {
-  //         ...info.data,
-  //         isReady: value,
-  //         isSuccess: suc,
-  //       },
-  //     });
-  //   }
-  // };
+  console.log("task name", taskName);
+
+  const handleDateChange = (value: DatePickerProps["value"]) => {
+    console.log("Selected Time: ", value);
+
+    setDate(value);
+    setNodeInfo({
+      ...nodeInfo,
+      data: {
+        ...nodeInfo.data,
+        dateValue: value,
+      },
+    });
+  };
+
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
+
     setNodeInfo({
       ...nodeInfo,
       data: {
         ...nodeInfo.data,
         content: e.target.value,
+        label: task,
       },
     });
   };
+
   const handleRangeDate = (
     value: DatePickerProps["value"] | RangePickerProps["value"],
     dateString: [string, string] | string
@@ -112,6 +114,7 @@ export default function CreationTaskForm({
   const setNodeSuccess = (value: boolean) => {
     setSuc(value);
     setNodeInfo({
+      ...nodeInfo,
       data: {
         ...nodeInfo.data,
         isSuccess: value,
@@ -125,7 +128,7 @@ export default function CreationTaskForm({
       ...nodeInfo,
       data: {
         ...nodeInfo.data,
-        freqency: value,
+        frequency: value,
       },
     });
   };
@@ -153,6 +156,7 @@ export default function CreationTaskForm({
   };
 
   const setNodeName = (value: string) => {
+    setTask(value);
     setNodeInfo({
       ...nodeInfo,
       data: {
@@ -272,16 +276,22 @@ export default function CreationTaskForm({
   const onSubmitHandler = () => {
     // onChangeNode(nodeInfo);
     console.log("current edge id", edgeId);
-
     createNode();
+    setContent("");
+    setNodeName("");
     onClose();
   };
 
   let title = "";
   let recipient;
 
-  if (taskType === "email") {
-    title = "发送邮件提醒";
+  if (taskType === "email" || taskType === "driveTest") {
+    if (taskType === "email") {
+      title = "发送邮件提醒";
+    } else if (taskType === "driveTest") {
+      title = "车辆试驾";
+    }
+
     recipient = (
       <Form.Item
         name="email"
@@ -302,6 +312,8 @@ export default function CreationTaskForm({
         <Input onChange={(evt) => setNodePhone(evt.target.value)} />
       </Form.Item>
     );
+  } else if (taskType === "customerDetails") {
+    title = "完善客档信息";
   }
 
   return (
@@ -313,7 +325,11 @@ export default function CreationTaskForm({
       bodyStyle={{ paddingBottom: 80 }}
     >
       <Form
-        initialValues={{ email: email, name: "" }}
+        initialValues={{
+          email: email,
+          taskName: "",
+          frequency: frequency,
+        }}
         layout="vertical"
         onFinish={onSubmitHandler}
         hideRequiredMark
@@ -321,7 +337,7 @@ export default function CreationTaskForm({
         <Row gutter={16}>
           <Col span={16}>
             <Form.Item
-              name="name"
+              name="taskName"
               label="任务名"
               rules={[{ required: true, message: "请输入任务名" }]}
             >
@@ -344,24 +360,47 @@ export default function CreationTaskForm({
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col span={16}>
-            <Form.Item name="dateRange" label="日期范围">
-              <Space direction="vertical" size={12}>
-                <RangePicker onChange={handleRangeDate} />
-              </Space>
-            </Form.Item>
-            <Form.Item name="frequency" label="频率">
-              <InputNumber
-                min={1}
-                max={30}
-                defaultValue={frequency}
-                onChange={handleFrequencyChange}
+          <Col span={24}>
+            {taskType === "driveTest" && (
+              <Form.Item
+                name="date"
+                label="试驾日期"
+                rules={[
+                  {
+                    type: "object" as const,
+                    required: true,
+                    message: "Please select date",
+                  },
+                ]}
+              >
+                <DatePicker
+                  disabledDate={disabledDate}
+                  onChange={handleDateChange}
+                />
+              </Form.Item>
+            )}
+
+            <Form.Item
+              name="dateRange"
+              label="日期范围"
+              rules={[
+                {
+                  type: "array" as const,
+                  required: true,
+                  message: "Please select date",
+                },
+              ]}
+            >
+              <RangePicker
+                disabledDate={disabledDate}
+                onChange={handleRangeDate}
               />
-              {"   "}天
+            </Form.Item>
+            <Form.Item name="frequency" label="频率 (天）">
+              <InputNumber min={1} max={30} onChange={handleFrequencyChange} />
             </Form.Item>
           </Col>
         </Row>
-
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item>

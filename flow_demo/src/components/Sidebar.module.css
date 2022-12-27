@@ -1,0 +1,10 @@
+.sidebarContainer {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  z-index: 10;
+}
+.sidebarContainer > Button {
+  margin: 5px;
+}

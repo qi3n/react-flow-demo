@@ -9,7 +9,7 @@
  *
  * The graph elements are added via hook calls in the custom nodes and edges. The layout is calculated every time the graph changes (see hooks/useLayout.ts).
  **/
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -47,6 +47,7 @@ import { randomLabel } from "./utils";
 import useEdgeClick from "./hooks/useEdgeClick";
 import useEdgeOnClick from "./hooks/useEdgeOnClick";
 import CreateTaskForm from "./components/CreateTaskForm";
+import Sidebar from "./components/Sidebar";
 
 const proOptions: ProOptions = { account: "paid-no", hideAttribution: true };
 
@@ -54,7 +55,7 @@ const emptyNodes: Node[] = [
   {
     id: "entry",
     data: {
-      label: "Entry",
+      label: "开始",
       isReady: true,
       isSuccess: false,
       isPreviousSuc: true,
@@ -64,7 +65,7 @@ const emptyNodes: Node[] = [
   },
   {
     id: "exit",
-    data: { label: "Exit" },
+    data: { label: "下一阶段" },
     position: { x: 0, y: 200 },
     type: "workflow",
   },
@@ -83,7 +84,7 @@ const demoNodes1: Node[] = [
   {
     id: "entry",
     data: {
-      label: "Entry",
+      label: "开始",
       isReady: true,
       isSuccess: false,
       isPreviousSuc: true,
@@ -94,20 +95,47 @@ const demoNodes1: Node[] = [
   {
     id: "1",
     data: {
-      label: "发送邮件提醒",
-      taskType: "email",
-      email: "zhengxu465@gmail.com",
+      label: "完善客档信息",
+      taskType: "customerDetails",
       content: "test content",
       frequency: 2,
-      dateRange: ["2022-12-27", "2022-12-30"],
+      dateRange: ["2022-12-30", "2023-01-30"],
     },
     type: "workflow",
     position: { x: 0, y: 150 },
   },
   {
-    id: "exit",
-    data: { label: "Exit" },
+    id: "2",
+    data: {
+      label: "提醒预约试驾",
+      taskType: "email",
+      email: "zhengxu465@gmail.com",
+      content: "test content",
+
+      frequency: 2,
+      dateRange: ["2022-12-27", "2023-12-30"],
+    },
+    type: "workflow",
     position: { x: 0, y: 300 },
+  },
+  {
+    id: "3",
+    data: {
+      label: "车辆试驾",
+      taskType: "driveTest",
+      email: "zhengxu465@gmail.com",
+      content: "test content",
+      frequency: 2,
+      dateValue: "2023-01-20",
+      dateRange: ["2023-01-10", "2023-01-20"],
+    },
+    type: "workflow",
+    position: { x: 0, y: 300 },
+  },
+  {
+    id: "exit",
+    data: { label: "下一阶段" },
+    position: { x: 0, y: 450 },
     type: "workflow",
   },
 ];
@@ -120,8 +148,20 @@ const demoEdges1: Edge[] = [
     type: "workflow",
   },
   {
-    id: "1=>exit",
+    id: "1=>2",
     source: "1",
+    target: "2",
+    type: "workflow",
+  },
+  {
+    id: "2=>3",
+    source: "2",
+    target: "3",
+    type: "workflow",
+  },
+  {
+    id: "3=>exit",
+    source: "3",
     target: "exit",
     type: "workflow",
   },
@@ -210,7 +250,21 @@ function ReactFlowDemo() {
   const [currentNodeId, setCurrentNodeId] = useState("");
   const [nodeType, setNodeType] = useState("placeholder");
   const [taskType, setTaskType] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [workflow, setWorkflow] = useState({
+    nodes: demoNodes1,
+    edges: demoEdges1,
+  });
 
+  // useEffect(() => {}, [workflow]);
+  const handleEmptyWorkFlow = () => {
+    console.log("click empty workflow");
+    setWorkflow({ nodes: emptyNodes, edges: emptyEdges });
+  };
+
+  const handleDemoWorkFlow = () => {
+    setWorkflow({ nodes: demoNodes1, edges: demoEdges1 });
+  };
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -228,6 +282,7 @@ function ReactFlowDemo() {
   };
 
   const handleCreationCancel = () => {
+    setTaskName("");
     setIsCreationOpen(false);
   };
 
@@ -236,6 +291,15 @@ function ReactFlowDemo() {
   const createTaskNode = (taskType: string, nodeType: string) => {
     setNodeType(nodeType);
     setTaskType(taskType);
+    if (taskType === "customerDetails") {
+      setTaskName("完善客档信息");
+    } else if (taskType === "email") {
+      setTaskName("发送邮件提醒");
+    } else if (taskType === "phone") {
+      setTaskName("发送短信提醒");
+    } else if (taskType === "driveTest") {
+      setTaskName("车辆试驾");
+    }
     handleOk();
     showCreation();
   };
@@ -260,6 +324,7 @@ function ReactFlowDemo() {
         nodeType={nodeType}
         taskType={taskType}
         edgeId={currentEdgeId}
+        taskName={taskName}
       />
 
       <Modal
@@ -279,20 +344,15 @@ function ReactFlowDemo() {
             <Button onClick={() => createTaskNode("phone", "workflow")}>
               电话提醒
             </Button>
-            {/* <Button onClick={() => createTaskNode()}>推送提醒</Button> */}
           </div>
           <div>
             <Title level={5}>事件</Title>
             <Button
-              disabled={true}
-              onClick={() => createTaskNode("event", "workflow")}
+              onClick={() => createTaskNode("customerDetails", "workflow")}
             >
               完善客档信息
             </Button>
-            <Button
-              disabled={true}
-              onClick={() => createTaskNode("event", "workflow")}
-            >
+            <Button onClick={() => createTaskNode("driveTest", "workflow")}>
               预约试驾
             </Button>
             <Button disabled={true} onClick={createBooleanNode}>
@@ -301,10 +361,15 @@ function ReactFlowDemo() {
           </div>
         </div>
       </Modal>
-
+      <Sidebar
+        onChangeEmpty={handleEmptyWorkFlow}
+        onChangeLeadDemo={handleDemoWorkFlow}
+      />
       <ReactFlow
-        defaultNodes={demoNodes1}
-        defaultEdges={demoEdges1}
+        defaultNodes={workflow.nodes}
+        defaultEdges={workflow.edges}
+        nodes={workflow.nodes}
+        edges={workflow.edges}
         // onNodeClick={onNodeClick}
         proOptions={proOptions}
         fitView

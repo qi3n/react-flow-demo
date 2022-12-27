@@ -89,6 +89,8 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
       nds.map((item) => {
         if (item.id === val.id) {
           item.data.label = val.data.label;
+          item.data.content = val.data.content;
+          item.data.frequency = val.data.frequency;
         }
         if (nextNodesID.includes(item.id)) {
           item.data.isReady = true;
@@ -124,6 +126,7 @@ const WorkflowNode = ({ id, data }: NodeProps) => {
         isPreviousSuc={isPreviousSuc}
         setIsPreviousSuc={setIsPreviousSuc}
       />
+
       <div
         onClick={onClick}
         className={nodeClasses}
