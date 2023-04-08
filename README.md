@@ -1,4 +1,4 @@
-# Workflow spike
+# Workflow spike with react flow 
 
 To run this demo, please do the following steps:
 
@@ -53,4 +53,4 @@ https://reactflow.dev/docs/introduction/
 
 ### DOING
 
--
+- [] refactor the code 
